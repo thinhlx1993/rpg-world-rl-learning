@@ -1,0 +1,12 @@
+Metadata-Version: 1.0
+Name: rpg-world
+Version: 1.0
+Summary: Game/game engine written in Python/Pygame
+Home-page: http://code.google.com/p/rpg-world/
+Author: Sam Eldred
+Author-email: samuel.eldred@gmail.com
+License: GNU GPL v3
+Description: 16-bit style graphics, a top-down perspective and tile-based maps - a
+                  retro style RPG much like the old SNES classics. Also features some pseudo-3D elements,
+                  eg. the ability to move underneath bridges, etc.
+Platform: Python source code
