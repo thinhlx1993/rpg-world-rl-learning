@@ -1,8 +1,11 @@
 import random
+import pygame
 import numpy as np
 from collections import deque
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.applications import NASNetMobile
+from pygame import key
+from keras.layers import Dense, Conv2D, Flatten
 from keras.optimizers import Adam
 from keras import backend as K
 import cv2
@@ -32,7 +35,9 @@ class DQNAgent:
     def _build_model(self):
         # Neural Net for Deep-Q learning Model
         model = Sequential()
-        model.add(Dense(24, input_dim=self.state_size, activation='relu'))
+        model.add(Conv2D(32, (3, 3), padding="same", activation="relu", input_shape=self.state_size))
+        model.add(Flatten())
+        model.add(Dense(128, activation='relu'))
         model.add(Dense(24, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
         model.compile(loss=self._huber_loss,
@@ -50,7 +55,17 @@ class DQNAgent:
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
         act_values = self.model.predict(state)
-        return np.argmax(act_values[0])  # returns action
+        action = np.argmax(act_values[0])
+        if action == 0:
+            return pygame.K_LEFT
+        elif action == 1:
+            return pygame.K_RIGHT
+        elif action == 2:
+            return pygame.K_UP
+        elif action == 3:
+            return pygame.K_DOWN
+
+        # return np.argmax(act_values[0])  # returns action
 
     def replay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
