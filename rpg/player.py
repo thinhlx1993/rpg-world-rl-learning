@@ -267,7 +267,7 @@ class Player(RpgSprite):
             self.dispatchMapTransitionEvent(event)
             return
         # unknown boundary
-        print "boundary!"
+        print("boundary!")
     
     """
     Returns the breached boundary and the tile range for that boundary.

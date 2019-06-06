@@ -48,7 +48,7 @@ class MusicPlayer:
                     pygame.mixer.music.load(track)
                     pygame.mixer.music.play(-1)
                 except pygame.error:
-                    print "Cannot load track: ", os.path.abspath(track)
+                    print("Cannot load track: %s" % os.path.abspath(track))
                     
     def longFadeoutCurrentTrack(self, name = None):
         self.fadeoutCurrentTrack(name, LONG_FADEOUT_MILLIS)

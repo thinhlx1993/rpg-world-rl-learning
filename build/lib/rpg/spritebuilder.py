@@ -39,7 +39,7 @@ def createSprite(mapSprite, rpgMap, eventBus, registry):
         sprite.setup(mapSprite.uid, rpgMap, eventBus)
         sprite.initMovement(mapSprite.level, tilePoints)
         return sprite
-    print "sprite type not found:", mapSprite.type 
+    print("sprite type not found:", mapSprite.type)
     return None
 
 """

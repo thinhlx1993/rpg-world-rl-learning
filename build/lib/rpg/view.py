@@ -33,7 +33,7 @@ def loadImage(imagePath, colourKey = None):
     try:
         image = pygame.image.load(imagePath)
     except pygame.error, message:
-        print "Cannot load image: ", os.path.abspath(imagePath)
+        print("Cannot load image: ", os.path.abspath(imagePath))
         raise SystemExit, message
     image = image.convert()
     if colourKey is not None:

@@ -19,6 +19,7 @@ TRACKS = {"title": ("ulmo-title.ogg", 0.6),
 def getTrackAndVolume(name):
     if name in TRACKS:
         filename, volume = TRACKS[name]
+        volume = 0
         return os.path.join(MUSIC_FOLDER, filename), volume
     return None, None
 
@@ -48,7 +49,7 @@ class MusicPlayer:
                     pygame.mixer.music.load(track)
                     pygame.mixer.music.play(-1)
                 except pygame.error:
-                    print "Cannot load track: ", os.path.abspath(track)
+                    print("Cannot load track: %s" % os.path.abspath(track))
                     
     def longFadeoutCurrentTrack(self, name = None):
         self.fadeoutCurrentTrack(name, LONG_FADEOUT_MILLIS)

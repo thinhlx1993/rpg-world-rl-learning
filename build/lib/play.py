@@ -1,9 +1,8 @@
 #! /usr/bin/env python
-
 from pygame.locals import KEYDOWN, K_ESCAPE, K_x, QUIT
 
 import pygame
-
+import rpg.states
 """
 If using an older Raspberry Pi distro, you might need to run the following commands to get working sound:
 
@@ -15,7 +14,6 @@ sudo modprobe snd_bcm2835
 pygame.mixer.pre_init(44100, -16, 2, 1024)
 pygame.init()
 
-import rpg.states
 
 def playMain():
     # get the first state
@@ -41,5 +39,7 @@ def playMain():
         if newState:
             currentState = newState
 
+
 # this calls the playMain function when this script is executed
-if __name__ == '__main__': playMain()
+if __name__ == '__main__':
+    playMain()
