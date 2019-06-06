@@ -1,12 +1,11 @@
 #! /usr/bin/env python
-from io import StringIO
-
 import numpy as np
 from pygame.locals import KEYDOWN, K_ESCAPE, K_x, QUIT
 from PIL import Image
 import pygame
 import rpg.states
 from controler import DQNAgent
+
 """
 If using an older Raspberry Pi distro, you might need to run the following commands to get working sound:
 
@@ -20,15 +19,23 @@ pygame.init()
 state_size = (160, 160, 4)
 action_size = 5  # UP, DOWN, LEFT, RIGHT, SPACE
 agent = DQNAgent(state_size, action_size)
-done = False
 batch_size = 32
+
+
+def capture_screen():
+    data = pygame.image.tostring(rpg.states.screen, 'RGBA')
+    img = Image.frombytes('RGBA', (160, 160), data)
+    observable = np.asarray(img).astype('float64')
+    observable /= 255.
+    observable = np.expand_dims(observable, axis=0)
+    return observable
 
 
 def playMain():
     # get the first state
-    currentState = rpg.states.showTitle(True)
+    current_state = rpg.states.showTitle(True)
     # start the main loop
-    clock = pygame.time.Clock()    
+    clock = pygame.time.Clock()
     while True:
         clock.tick(rpg.states.FRAMES_PER_SEC)
         for event in pygame.event.get():
@@ -40,38 +47,40 @@ def playMain():
                 # rpg.states.musicPlayer.toggleMusic()
                 pass
 
-        # detect key presses    
-        keyPresses = [0]*323
-        # if max(keyPresses) != 0:
-        #     for index, item in enumerate(keyPresses):
-        #         print(index)
-        # pygame.image.save(currentState.backgroundImage, data)
-        data = pygame.image.tostring(rpg.states.screen, 'RGB')
-        img = Image.frombytes('RGB', (160, 160), data)
-        observable = np.asarray(img).astype('float64')
-        observable /= 255.
+        # detect key presses
+        keyPresses = pygame.key.get_pressed()
+        observable = capture_screen()
         action = agent.act(observable)
-        if action == 0:
-            keyPresses[pygame.K_LEFT] = 1
-        elif action == 1:
-            keyPresses[pygame.K_RIGHT] = 1
-        elif action == 2:
-            keyPresses[pygame.K_UP] = 1
-        elif action == 3:
-            keyPresses[pygame.K_DOWN] = 1
-        else:
-            keyPresses[pygame.K_SPACE] = 1
+
+        # keyPresses = [0]*323
+        # if action == 0:
+        #     keyPresses[pygame.K_LEFT] = 1
+        # elif action == 1:
+        #     keyPresses[pygame.K_RIGHT] = 1
+        # elif action == 2:
+        #     keyPresses[pygame.K_UP] = 1
+        # elif action == 3:
+        #     keyPresses[pygame.K_DOWN] = 1
+        # else:
+        #     keyPresses[pygame.K_SPACE] = 1
 
         # delegate key presses to the current state
-        newState = currentState.execute(keyPresses)
-        # print(currentState.playState)
+        new_state = current_state.execute(keyPresses)
+        if hasattr(current_state, 'lifeLostEvent'):
+            if 'NoneType' not in str(type(current_state.lifeLostEvent)):
+                if 'lives' in current_state.lifeLostEvent:
+                    print(current_state.lifeLostEvent)
+
         reward = -1
-        # agent.remember(currentState, action, reward, newState, done)
+        agent.remember(observable, action, reward, new_state, False)
+        if len(agent.memory) > batch_size:
+            agent.replay(batch_size)
+
         # flush sounds
         rpg.states.soundHandler.flush()
         # change state if necessary
-        if newState:
-            currentState = newState
+        if new_state:
+            current_state = new_state
 
 
 # this calls the playMain function when this script is executed
