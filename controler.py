@@ -55,17 +55,7 @@ class DQNAgent:
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
         act_values = self.model.predict(state)
-        action = np.argmax(act_values[0])
-        if action == 0:
-            return pygame.K_LEFT
-        elif action == 1:
-            return pygame.K_RIGHT
-        elif action == 2:
-            return pygame.K_UP
-        elif action == 3:
-            return pygame.K_DOWN
-
-        # return np.argmax(act_values[0])  # returns action
+        return np.argmax(act_values[0])  # returns action
 
     def replay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)

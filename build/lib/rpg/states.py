@@ -22,7 +22,7 @@ from sounds import SoundHandler
 from music import MusicPlayer
 from fixedsprites import FixedCoin, CoinCount, KeyCount, Lives, CheckpointIcon
 
-FRAMES_PER_SEC = 60 // VELOCITY
+FRAMES_PER_SEC = 24 // VELOCITY
 
 THIRTY_TWO = 32 // VELOCITY
 SIXTY_FOUR = 64 // VELOCITY

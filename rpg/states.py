@@ -222,20 +222,28 @@ class TitleState:
             screen.blit(self.backgroundImage, ORIGIN, Rect(x, y, VIEW_WIDTH, VIEW_HEIGHT))
             pygame.display.flip()
         elif self.ticks == self.titleTicks + THIRTY_TWO:
+            # first lives
             x, y = (VIEW_WIDTH - self.titleImage.get_width()) // 2, 26 * SCALAR
             screen.blit(self.titleImage, (x, y))
             pygame.display.flip()
             eventBus.dispatchTitleShownEvent(TitleShownEvent())
+            # self.ticks, self.started = 0, True
+            # eventBus.dispatchGameStartedEvent(GameStartedEvent())
         elif self.ticks == self.titleTicks + SIXTY_FOUR:
+            # seconds lives
             self.screenImage = screen.copy()
             self.playState = startGame(False, self.startRegistry)
             # self.playState = startGame()  # SKIP START
             self.showPlayLine(self.playLine)
-            eventBus.dispatchTitleShownEvent(TitleShownEvent());
+            eventBus.dispatchTitleShownEvent(TitleShownEvent())
+
+            # self.ticks, self.started = 0, True
+            # eventBus.dispatchGameStartedEvent(GameStartedEvent())
         elif self.ticks > self.titleTicks + SIXTY_FOUR:
+            # restart game
             if keyPresses[K_SPACE]:
                 self.ticks, self.started = 0, True
-                eventBus.dispatchGameStartedEvent(GameStartedEvent());
+                eventBus.dispatchGameStartedEvent(GameStartedEvent())
                 return
         self.ticks += 1
 
