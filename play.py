@@ -16,15 +16,15 @@ sudo modprobe snd_bcm2835
 # initialise pygame before we import anything else
 pygame.mixer.pre_init(44100, -16, 2, 1024)
 pygame.init()
-state_size = (160, 160, 4)
+state_size = (160, 160, 3)
 action_size = 5  # UP, DOWN, LEFT, RIGHT, SPACE
 agent = DQNAgent(state_size, action_size)
 batch_size = 32
 
 
 def capture_screen():
-    data = pygame.image.tostring(rpg.states.screen, 'RGBA')
-    img = Image.frombytes('RGBA', (160, 160), data)
+    data = pygame.image.tostring(rpg.states.screen, 'RGB')
+    img = Image.frombytes('RGB', (160, 160), data)
     observable = np.asarray(img).astype('float64')
     observable /= 255.
     observable = np.expand_dims(observable, axis=0)
@@ -48,31 +48,33 @@ def playMain():
                 pass
 
         # detect key presses
-        keyPresses = pygame.key.get_pressed()
+        # keyPresses = pygame.key.get_pressed()
         observable = capture_screen()
         action = agent.act(observable)
 
-        # keyPresses = [0]*323
-        # if action == 0:
-        #     keyPresses[pygame.K_LEFT] = 1
-        # elif action == 1:
-        #     keyPresses[pygame.K_RIGHT] = 1
-        # elif action == 2:
-        #     keyPresses[pygame.K_UP] = 1
-        # elif action == 3:
-        #     keyPresses[pygame.K_DOWN] = 1
-        # else:
-        #     keyPresses[pygame.K_SPACE] = 1
+        keyPresses = [0]*323
+        if action == 0:
+            keyPresses[pygame.K_LEFT] = 1
+        elif action == 1:
+            keyPresses[pygame.K_RIGHT] = 1
+        elif action == 2:
+            keyPresses[pygame.K_UP] = 1
+        elif action == 3:
+            keyPresses[pygame.K_DOWN] = 1
+        else:
+            keyPresses[pygame.K_SPACE] = 1
 
         # delegate key presses to the current state
+        done = False
         new_state = current_state.execute(keyPresses)
         if hasattr(current_state, 'lifeLostEvent'):
             if 'NoneType' not in str(type(current_state.lifeLostEvent)):
                 if 'lives' in current_state.lifeLostEvent:
                     print(current_state.lifeLostEvent)
+                    done = True
 
-        reward = -1
-        agent.remember(observable, action, reward, new_state, False)
+        reward = 1 if not done else -10
+        agent.remember(observable, action, reward, new_state, done)
         if len(agent.memory) > batch_size:
             agent.replay(batch_size)
 

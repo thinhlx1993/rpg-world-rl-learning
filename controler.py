@@ -21,7 +21,7 @@ class DQNAgent:
         self.gamma = 0.95    # discount rate
         self.epsilon = 1.0  # exploration rate
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.99
+        self.epsilon_decay = 0.999
         self.learning_rate = 0.001
         self.model = self._build_model()
         self.target_model = self._build_model()
@@ -60,6 +60,9 @@ class DQNAgent:
     def replay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
         for state, action, reward, next_state, done in minibatch:
+            if type(next_state) != np.ndarray or type(state) != np.ndarray:
+                return
+
             target = self.model.predict(state)
             if done:
                 target[0][action] = reward
