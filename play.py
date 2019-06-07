@@ -17,7 +17,7 @@ sudo modprobe snd_bcm2835
 pygame.mixer.pre_init(44100, -16, 2, 1024)
 pygame.init()
 state_size = (160, 160, 3)
-action_size = 5  # UP, DOWN, LEFT, RIGHT, SPACE
+action_size = 6  # UP, DOWN, LEFT, RIGHT, SPACE, NOTHING
 agent = DQNAgent(state_size, action_size)
 batch_size = 32
 
@@ -61,28 +61,31 @@ def playMain():
             keyPresses[pygame.K_UP] = 1
         elif action == 3:
             keyPresses[pygame.K_DOWN] = 1
-        else:
+        elif action == 4:
             keyPresses[pygame.K_SPACE] = 1
+        else:
+            keyPresses[pygame.KEYUP] = 1
 
         # delegate key presses to the current state
-        done = False
-        new_state = current_state.execute(keyPresses)
-        if hasattr(current_state, 'lifeLostEvent'):
-            if 'NoneType' not in str(type(current_state.lifeLostEvent)):
-                if 'lives' in current_state.lifeLostEvent:
-                    print(current_state.lifeLostEvent)
-                    done = True
+        if action:
+            done = False
+            new_state = current_state.execute(keyPresses)
+            if hasattr(current_state, 'lifeLostEvent'):
+                if 'NoneType' not in str(type(current_state.lifeLostEvent)):
+                    if 'lives' in current_state.lifeLostEvent:
+                        print(current_state.lifeLostEvent)
+                        done = True
 
-        reward = 1 if not done else -10
-        agent.remember(observable, action, reward, new_state, done)
-        if len(agent.memory) > batch_size:
-            agent.replay(batch_size)
+            reward = 1 if not done else -10
+            agent.remember(observable, action, reward, new_state, done)
+            if len(agent.memory) > batch_size:
+                agent.replay(batch_size)
 
-        # flush sounds
-        rpg.states.soundHandler.flush()
-        # change state if necessary
-        if new_state:
-            current_state = new_state
+            # flush sounds
+            rpg.states.soundHandler.flush()
+            # change state if necessary
+            if new_state:
+                current_state = new_state
 
 
 # this calls the playMain function when this script is executed
