@@ -27,6 +27,6 @@ tensorboard==1.6.0
 tensorflow==1.6.0
 termcolor==1.1.0
 webencodings==0.5.1
-Werkzeug==0.15.2
+Werkzeug==0.15.3
 wincertstore==0.2
 Pillow
